@@ -1,4 +1,4 @@
-package com.appsdeveloperblog.app.ws.mobileappws.model.response;
+package com.appsdeveloperblog.app.ws.mobileappws.ui.model.response;
 
 // User-facing layer
 public class UserRest {

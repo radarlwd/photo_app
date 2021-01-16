@@ -1,7 +1,9 @@
 package com.appsdeveloperblog.app.ws.mobileappws.ui.controller;
 
 
-import com.appsdeveloperblog.app.ws.mobileappws.model.response.UserRest;
+import com.appsdeveloperblog.app.ws.mobileappws.exceptions.UserServiceException;
+import com.appsdeveloperblog.app.ws.mobileappws.ui.model.response.ErrorMessages;
+import com.appsdeveloperblog.app.ws.mobileappws.ui.model.response.UserRest;
 import com.appsdeveloperblog.app.ws.mobileappws.service.UserService;
 import com.appsdeveloperblog.app.ws.mobileappws.shared.dto.UserDto;
 import com.appsdeveloperblog.app.ws.mobileappws.ui.model.request.UserDetailsRequestModel;
@@ -29,9 +31,10 @@ public class UserController {
     @PostMapping(
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails){
+    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception
+    {
 
-        System.out.println("Create User");
+        if(userDetails.getFirstName().isEmpty()) throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
 
         UserRest returnValue = new UserRest();
 
