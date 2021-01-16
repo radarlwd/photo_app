@@ -23,6 +23,9 @@ public class UserController {
 
     @PostMapping
     public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails){
+
+        System.out.println("Create User");
+
         UserRest returnValue = new UserRest();
 
         UserDto userDto = new UserDto();
