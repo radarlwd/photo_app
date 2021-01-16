@@ -3,6 +3,8 @@ package com.appsdeveloperblog.app.ws.mobileappws.ui.controller;
 
 import com.appsdeveloperblog.app.ws.mobileappws.exceptions.UserServiceException;
 import com.appsdeveloperblog.app.ws.mobileappws.ui.model.response.ErrorMessages;
+import com.appsdeveloperblog.app.ws.mobileappws.ui.model.response.OperationStatusModel;
+import com.appsdeveloperblog.app.ws.mobileappws.ui.model.response.RequestOperationStatus;
 import com.appsdeveloperblog.app.ws.mobileappws.ui.model.response.UserRest;
 import com.appsdeveloperblog.app.ws.mobileappws.service.UserService;
 import com.appsdeveloperblog.app.ws.mobileappws.shared.dto.UserDto;
@@ -47,14 +49,37 @@ public class UserController {
         return returnValue;
     }
 
-    @PutMapping
-    public String updateUser(){
-        return "update user was called";
+    @PutMapping(path = "/{id}", consumes = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE },
+            produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+//    })
+    public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
+        UserRest returnValue = new UserRest();
+
+        UserDto userDto = new UserDto();
+//        userDto = new ModelMapper().map(userDetails, UserDto.class);
+        BeanUtils.copyProperties(userDetails, userDto);
+
+        UserDto updateUser = userService.updateUser(id, userDto);
+//        returnValue = new ModelMapper().map(updateUser, UserRest.class);
+        BeanUtils.copyProperties(updateUser, returnValue);
+
+        return returnValue;
     }
 
-    @DeleteMapping
-    public String deleteUser(){
-        return "delete user was called";
+    @DeleteMapping(path = "/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+//    })
+    public OperationStatusModel deleteUser(@PathVariable String id) {
+        OperationStatusModel returnValue = new OperationStatusModel();
+        returnValue.setOperationName(RequestOperationName.DELETE.name());
+
+        userService.deleteUser(id);
+
+        returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        return returnValue;
     }
 
 
