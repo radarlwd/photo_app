@@ -1,0 +1,11 @@
+# Compile and build the project
+mvn install
+
+# run the application on Apache Tomcat container.
+mvn spring-boot:run
+
+
+Running Web Services App
+1. Build your project with mvn install command
+2. Upload the deployable .jar file to a production server
+3. Run application with java -jar <file name> command
