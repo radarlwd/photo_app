@@ -5,6 +5,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @SpringBootApplication
 public class MobileAppWsApplication {
@@ -23,5 +28,18 @@ public class MobileAppWsApplication {
 
 	@Bean(name="AppProperties")
 	public AppProperties getAppProperties(){ return new AppProperties(); }
+
+	// expose Authorization for client application
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+
+		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration config = new CorsConfiguration();
+		source.registerCorsConfiguration("/**", config.applyPermitDefaultValues());
+		//allow Authorization to be exposed
+		config.setExposedHeaders(Arrays.asList("Authorization"));
+
+		return source;
+	}
 
 }

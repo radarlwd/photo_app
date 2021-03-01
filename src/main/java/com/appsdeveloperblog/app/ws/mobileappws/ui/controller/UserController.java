@@ -34,8 +34,8 @@ public class UserController {
     @Autowired
     AddressService addressService;
 
-    @GetMapping(path="/{id}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public UserRest getUser(@PathVariable String id){
+    @GetMapping(path = "/{id}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public UserRest getUser(@PathVariable String id) {
 //        UserRest returnValue = new UserRest();
 //
 //        UserDto userDto = userService.getUserByUserId(id);
@@ -48,10 +48,10 @@ public class UserController {
         return returnValue;
     }
 
-//    @ApiImplicitParams({
+    //    @ApiImplicitParams({
 //            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
 //    })
-    @GetMapping(produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+    @GetMapping(produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                    @RequestParam(value = "limit", defaultValue = "2") int limit) {
         List<UserRest> returnValue = new ArrayList<>();
@@ -62,11 +62,11 @@ public class UserController {
 //        }.getType();
 //        returnValue = new ModelMapper().map(users, listType);
 
-		for (UserDto userDto : users) {
-			UserRest userModel = new UserRest();
-			BeanUtils.copyProperties(userDto, userModel);
-			returnValue.add(userModel);
-		}
+        for (UserDto userDto : users) {
+            UserRest userModel = new UserRest();
+            BeanUtils.copyProperties(userDto, userModel);
+            returnValue.add(userModel);
+        }
 
         return returnValue;
     }
@@ -74,12 +74,12 @@ public class UserController {
     @PostMapping(
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception
-    {
+    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception {
 
-        if(userDetails.getFirstName().isEmpty() || userDetails.getLastName().isEmpty() || userDetails.getEmail().isEmpty() || userDetails.getPassword().isEmpty()) throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+        if (userDetails.getFirstName().isEmpty() || userDetails.getLastName().isEmpty() || userDetails.getEmail().isEmpty() || userDetails.getPassword().isEmpty())
+            throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
 
-        UserRest returnValue = new UserRest();
+//        UserRest returnValue = new UserRest();
 //
 //        UserDto userDto = new UserDto();
 //        BeanUtils.copyProperties(userDetails, userDto);
@@ -91,14 +91,14 @@ public class UserController {
         UserDto userDto = modelMapper.map(userDetails, UserDto.class);
 
         UserDto createdUser = userService.createUser(userDto);
-        returnValue = modelMapper.map(createdUser, UserRest.class);
+        UserRest returnValue = modelMapper.map(createdUser, UserRest.class);
 
 
         return returnValue;
     }
 
-    @PutMapping(path = "/{id}", consumes = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE },
-            produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+    @PutMapping(path = "/{id}", consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
 //    })
@@ -116,7 +116,7 @@ public class UserController {
         return returnValue;
     }
 
-    @DeleteMapping(path = "/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+    @DeleteMapping(path = "/{id}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
 //    })
@@ -134,19 +134,20 @@ public class UserController {
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
 //    })
-    @GetMapping(path = "/{id}/addresses", produces = { MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE, "application/hal+json" })
+    @GetMapping(path = "/{id}/addresses", produces = {MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
     public CollectionModel<AddressesRest> getUserAddresses(@PathVariable String id) {
 
         List<AddressesRest> returnValue = new ArrayList<>();
 
         List<AddressDTO> addressDTOS = addressService.getAddresses(id);
 
-        if(addressDTOS != null && !addressDTOS.isEmpty()) {
-            Type listType = new TypeToken<List<AddressesRest>>(){}.getType();
+        if (addressDTOS != null && !addressDTOS.isEmpty()) {
+            Type listType = new TypeToken<List<AddressesRest>>() {
+            }.getType();
             returnValue = new ModelMapper().map(addressDTOS, listType);
 
-            for(AddressesRest addressRest: returnValue) {
+            for (AddressesRest addressRest : returnValue) {
                 Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddress(id, addressRest.getAddressId()))
                         .withSelfRel();
                 addressRest.add(selfLink);
@@ -159,7 +160,7 @@ public class UserController {
         return CollectionModel.of(returnValue, userLink, selfLink);
     }
 
-    @GetMapping(path = "/{userId}/addresses/{addressId}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @GetMapping(path = "/{userId}/addresses/{addressId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public EntityModel<AddressesRest> getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
         AddressDTO addressDto = addressService.getAddress(addressId);
 
@@ -184,6 +185,28 @@ public class UserController {
 //        returnValue.add(selfLink);
 
         return EntityModel.of(returnValue, Arrays.asList(userLink, userAddressesLink, selfLink));
+    }
+
+    /*
+     * http://localhost:8080/mobile-app-ws/users/email-verification?token=sdfsdf
+     * */
+    @GetMapping(path = "/email-verification", produces = { MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE })
+    public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token) {
+
+        OperationStatusModel returnValue = new OperationStatusModel();
+        returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
+
+        boolean isVerified = userService.verifyEmailToken(token);
+
+        if(isVerified)
+        {
+            returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        } else {
+            returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+        }
+
+        return returnValue;
     }
 
 
